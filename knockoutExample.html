@@ -1,0 +1,156 @@
+ <!DOCTYPE html>
+<html>
+<head>
+
+    
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript">
+        var clicks = 1;
+        $( function() {
+            $( ".targetdate" ).datepicker();
+          } );
+        var initialData = [
+    {   Title: "Project 0", 
+        Description: "Feature Request 0"
+    }
+];
+ function Add() {
+     var divs = document.getElementsByName('priority')
+         //alert("divs.length " + divs.length);
+         for(i=0; i <divs.length;i++)
+         {
+           var ddl = document.getElementsByName("priority")[i];
+           if(i == divs.length-1)
+           {
+              for(j=1; j <divs.length;j++)
+              {
+                
+                var option = document.createElement("OPTION");
+                var k = j + 1;
+                option.innerHTML = '' + k;
+                option.value = '' + k;
+                ddl.options.add(option);
+                //alert("add value " + k + " to element " + i);
+              }
+              ddl.value = divs.length;
+           }
+           else
+           {
+            
+            var option = document.createElement("OPTION");
+            option.innerHTML = '' + clicks;
+            option.value = '' + clicks;
+            ddl.options.add(option);
+            //alert("add value " + clicks + " to element " + i);
+           }
+         }
+        }
+function Delete() {
+     var divs = document.getElementsByName('priority')
+         for(i=0; i <divs.length;i++)
+         {
+           var ddl = document.getElementsByName("priority")[i];
+           ddl.remove(divs.length);
+         }
+        }
+var ContactsModel = function(contacts) {
+    var self = this;
+
+    self.numberOfClicks = ko.observable(0);
+    self.contacts = ko.observableArray(ko.utils.arrayMap(contacts, function(contact) {
+        return { Title: contact.Title, Description: contact.Description};
+    }));
+ 
+    self.addContact = function() {
+        self.contacts.push({
+            Title: "Project " + clicks,
+            Description: "Feaure Request " + clicks
+        });
+        clicks++;
+        Add();
+        //alert("There are " + clicks + " contacts.");
+    };
+
+    self.removeContact = function(contact) {
+        clicks--;
+        self.contacts.remove(contact);
+        Delete();
+    };
+ 
+    
+ 
+
+};
+        
+    </script>
+</head>
+<body onload="ko.applyBindings(new ContactsModel(initialData));">
+    <form action = "featurerequest.cgi" method = "POST" >
+    <div class='liveExample'> 
+    
+    <h2>Feature Request</h2>
+    <div id='contactsList'>
+        <table class='contactsEditor'>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Client</th>
+                <th>Priority</th>
+                <th>Product</th>
+                <th>TargetDate</th>
+            </tr>
+            <tbody data-bind="foreach: contacts">
+                <tr>
+                    <td>
+                        <input data-bind="value: Title,  attr: {id: 'title_' + $index(), name: 'title'+ $index() }" />
+                        <div><a href='#' data-bind='click: $root.removeContact'>Delete</a></div>
+                    </td>
+                    <td><textarea data-bind="value: Description, attr: {id: 'description_' + $index(), name: 'description'+ $index() }" rows='5' cols='10'> </textarea></td>
+                     <td>
+                       <select name="client">
+                         <option value="ClientA">Client A</option>
+                         <option value="ClientB">Client B</option>
+                         <option value="ClientC">Client C</option>
+                       </select>
+                     </td>
+                     
+                     
+                      <td>
+                        <select name="priority">
+                          <option value="1">1</option>
+                        </select>
+
+                      </td>         
+                    <td>
+                       <select name="productarea">
+                           <option value="Policies">Policies</option>
+                           <option value="Billings">Billings</option>
+                           <option value="Claims">Claims</option>
+                           <option value="Reports">Reports</option>
+                       </select>
+
+                    </td> 
+                    <td>
+                     <input type="text" class="targetdate" name="targetdate" value="12/12/2018"/>   
+                        
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+     
+    <p>
+        <button data-bind='click: addContact'>Add a contact</button>
+        
+    </p>
+     
+    
+    
+</div>
+    <input type = "submit" value = "Submit">
+        </form>
+
+    </body>
+    </html>
